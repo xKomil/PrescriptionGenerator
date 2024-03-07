@@ -1,0 +1,127 @@
+-- Tabela dla pacjentów
+CREATE TABLE Pacjent (
+    PacjentID INT PRIMARY KEY IDENTITY(1,1),
+    Imie NVARCHAR(50),
+    Nazwisko NVARCHAR(50),
+    Adres NVARCHAR(100),
+    NrUbezpieczeniaZdrowotnego NVARCHAR(20),
+    DataUrodzenia DATE,
+    Telefon NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+-- Tabela dla lekarzy
+CREATE TABLE Lekarz (
+    LekarzID INT PRIMARY KEY IDENTITY(1,1),
+    Imie NVARCHAR(50),
+    Nazwisko NVARCHAR(50),
+    NrIdentyfikacyjny NVARCHAR(20),
+    Telefon NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+-- Tabela dla wizyt
+CREATE TABLE Wizyta (
+    WizytaID INT PRIMARY KEY IDENTITY(1,1),
+    DataWizyty DATE,
+    GodzinaRozpoczecia TIME,
+    GodzinaZakonczenia TIME,
+    Status NVARCHAR(20),
+    Opis NVARCHAR(MAX),
+    PacjentID INT,
+    LekarzID INT,
+    FOREIGN KEY (PacjentID) REFERENCES Pacjent(PacjentID),
+    FOREIGN KEY (LekarzID) REFERENCES Lekarz(LekarzID)
+);
+
+-- Tabela dla historii chorób
+CREATE TABLE HistoriaChorob (
+    HistoriaID INT PRIMARY KEY IDENTITY(1,1),
+    DataDiagnozy DATE,
+    Opis NVARCHAR(MAX),
+    PacjentID INT,
+    FOREIGN KEY (PacjentID) REFERENCES Pacjent(PacjentID)
+);
+
+-- Tabela dla badań laboratoryjnych
+CREATE TABLE BadaniaLaboratoryjne (
+    BadaniaID INT PRIMARY KEY IDENTITY(1,1),
+    DataWykonania DATE,
+    RodzajBadania NVARCHAR(100),
+    Wyniki NVARCHAR(MAX),
+    PacjentID INT,
+    LekarzID INT,
+    FOREIGN KEY (PacjentID) REFERENCES Pacjent(PacjentID),
+    FOREIGN KEY (LekarzID) REFERENCES Lekarz(LekarzID)
+);
+
+-- Tabela dla leków
+CREATE TABLE Leki (
+    LekiID INT PRIMARY KEY IDENTITY(1,1),
+    NazwaLeku NVARCHAR(100),
+    Dawka NVARCHAR(50),
+    Czestotliwosc NVARCHAR(50),
+    DataWaznosci DATE,
+    Ilosc INT,
+    IloscMinimalna INT,
+    InstrukcjeStosowania NVARCHAR(MAX),
+    PacjentID INT,
+    FOREIGN KEY (PacjentID) REFERENCES Pacjent(PacjentID)
+);
+
+-- Tabela dla recept
+CREATE TABLE Recepta (
+    ReceptaID INT PRIMARY KEY IDENTITY(1,1),
+    PacjentID INT,
+    LekarzID INT,
+    DataWystawienia DATE,
+    NazwaLeku NVARCHAR(100),
+    Dawka NVARCHAR(50),
+    Czestotliwosc NVARCHAR(50),
+    IloscOpakowan INT,
+    FOREIGN KEY (PacjentID) REFERENCES Pacjent(PacjentID),
+    FOREIGN KEY (LekarzID) REFERENCES Lekarz(LekarzID)
+);
+
+-- Tabela dla zleceń badań laboratoryjnych
+CREATE TABLE ZlecenieBadanLab (
+    ZlecenieID INT PRIMARY KEY IDENTITY(1,1),
+    PacjentID INT,
+    LekarzID INT,
+    DataZlecenia DATE,
+    RodzajBadania NVARCHAR(100),
+    FOREIGN KEY (PacjentID) REFERENCES Pacjent(PacjentID),
+    FOREIGN KEY (LekarzID) REFERENCES Lekarz(LekarzID)
+);
+
+-- Tabela dla chorób
+CREATE TABLE Choroba (
+    ChorobaID INT PRIMARY KEY IDENTITY(1,1),
+    Nazwa NVARCHAR(100),
+    Objawy NVARCHAR(MAX),
+    Przyczyny NVARCHAR(MAX),
+    MetodyLeczenia NVARCHAR(MAX)
+);
+
+CREATE TABLE Pokoje (
+    PokojID INT PRIMARY KEY IDENTITY(1,1),
+    NumerPokoju INT NOT NULL
+);
+
+CREATE TABLE Specjalizacja (
+    SpecjalizacjaID INT IDENTITY(1,1) PRIMARY KEY,
+    NazwaSpecjalizacji VARCHAR(255) NOT NULL,
+    FOREIGN KEY (SpecjalizacjaID) REFERENCES Specjalizacja(SpecjalizacjaID)
+);
+
+CREATE TABLE PlanPrzychodni (
+    PlanID INT IDENTITY(1,1) PRIMARY KEY,
+    LekarzID INT,
+    DataWizyty DATE,
+    GodzinaRozpoczecia TIME,
+    GodzinaZakonczenia TIME,
+    PokojID INT,
+    FOREIGN KEY (LekarzID) REFERENCES Lekarz(LekarzID),
+    FOREIGN KEY (PokojID) REFERENCES Pokoje(PokojID)
+);
+
